@@ -1,9 +1,6 @@
-//
 package main
 
 import (
-	"bytes"
-	"compress/gzip"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -40,24 +37,6 @@ func main() {
 	default:
 		fmt.Println("Unknown command: " + args[0])
 	}
-}
-
-func compressData(data []byte) []byte {
-	var output bytes.Buffer
-	writer := gzip.NewWriter(&output)
-
-	checkErr2(writer.Write(data))
-	checkErr1(writer.Close())
-
-	return output.Bytes()
-}
-
-func decompressData(data []byte) []byte {
-	input := bytes.NewReader(data)
-	reader := checkErr2(gzip.NewReader(input))
-	defer checkErr1(reader.Close())
-
-	return checkErr2(io.ReadAll(reader))
 }
 
 func compressFile(inFilePath string, outFilePath string, mode bool) {
@@ -131,9 +110,9 @@ func modifyBlocks(inDataBlocks chan DataBlock, outDataBlocks chan DataBlock, mod
 
 	for dataBlock := range inDataBlocks {
 		if mode == ModeCompress {
-			dataBlock.data = compressData(dataBlock.data)
+			dataBlock.data = compress(dataBlock.data)
 		} else {
-			dataBlock.data = decompressData(dataBlock.data)
+			dataBlock.data = decompress(dataBlock.data)
 		}
 
 		outDataBlocks <- dataBlock
