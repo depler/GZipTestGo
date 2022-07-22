@@ -69,7 +69,7 @@ func readBlocks(inFilePath string, inDataBlocks chan DataBlock, mode bool, wg *s
 	defer wg.Done()
 
 	inFile := checkErr2(os.OpenFile(inFilePath, os.O_RDONLY, 0))
-	defer checkErr1(inFile.Close())
+	defer checkErr1Lazy(inFile.Close)
 
 	for blockIndex := 0; ; blockIndex++ {
 		var origBlockIndex int32
@@ -123,7 +123,7 @@ func writeBlocks(outDataBlocks chan DataBlock, outFilePath string, mode bool, wg
 	defer wg.Done()
 
 	outFile := checkErr2(os.OpenFile(outFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 666))
-	defer checkErr1(outFile.Close())
+	defer checkErr1Lazy(outFile.Close)
 
 	for dataBlock := range outDataBlocks {
 		if mode == ModeCompress {

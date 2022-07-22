@@ -19,7 +19,7 @@ func compress(data []byte) []byte {
 func decompress(data []byte) []byte {
 	input := bytes.NewReader(data)
 	reader := checkErr2(gzip.NewReader(input))
-	defer checkErr1(reader.Close())
+	defer checkErr1Lazy(reader.Close)
 
 	return checkErr2(io.ReadAll(reader))
 }
